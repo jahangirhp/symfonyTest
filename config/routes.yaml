@@ -1,0 +1,9 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+number:
+    path: /lucky/number
+    controller: App\Controller\LuckyNumberController::index
