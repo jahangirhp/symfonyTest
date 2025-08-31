@@ -7,14 +7,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Form\UserType;
+use Exception;
 
 final class UserController extends AbstractController
 {
     #[Route('/user', name: 'app_user')]
     public function createUser(EntityManagerInterface $entityManager): Response
     {
+        throw new Exception('this is a test for exception');
         $user = new User();
         $user->setName('John Doe');
         $user->setEmail('john.doe@example.com');
@@ -74,6 +77,30 @@ final class UserController extends AbstractController
         $html .= '</table>';
 
         return new Response($html);
+    }
+
+      #[Route('/api/users/get', name: 'api_users_get')]
+    public function apiGet(EntityManagerInterface $entityManager): Response
+    {
+        $users = $entityManager->getRepository(User::class)->findAll();
+
+        $data = [];
+        foreach ($users as $user) {
+            $data[] = [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+            ];
+        }
+
+        return new JsonResponse($data);
+    }
+
+    #[Route('/jsApi', name: 'js_api')]
+    public function getByJs(): Response
+    {
+        // Render the Twig template
+        return $this->render('user/getUserByJs.html.twig');
     }
     
 }
