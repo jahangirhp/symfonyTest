@@ -10,6 +10,7 @@
         "doctrine/dbal": "^4.3",
         "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4",
+        "guzzlehttp/guzzle": "^7.10",
         "symfony/amqp-messenger": "7.3.*",
         "symfony/asset": "7.3.*",
         "symfony/asset-mapper": "7.3.*",
@@ -19,13 +20,16 @@
         "symfony/form": "7.3.*",
         "symfony/framework-bundle": "7.3.*",
         "symfony/http-client": "7.3.*",
+        "symfony/intl": "7.3.*",
         "symfony/runtime": "7.3.*",
         "symfony/twig-bundle": "7.3.*",
         "symfony/ux-icons": "^2.30",
         "symfony/ux-twig-component": "^2.30",
+        "symfony/validator": "7.3.*",
         "symfony/yaml": "7.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "ext-http": "*"
     },
     "require-dev": {
         "doctrine/orm": "^3.5",
