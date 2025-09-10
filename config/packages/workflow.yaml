@@ -1,0 +1,33 @@
+framework:
+    workflows:
+        order_workflow:
+            type: 'state_machine'
+            supports:
+                - App\Entity\Orders
+            marking_store:
+                type: 'method'
+                property: marking
+            initial_marking: draft
+            places:
+                - draft
+                - pending
+                - approved
+                - shipped
+                - delivered
+                - cancelled
+            transitions:
+                submit:
+                    from: draft
+                    to: pending
+                approve:
+                    from: pending
+                    to: approved
+                ship:
+                    from: approved
+                    to: shipped
+                deliver:
+                    from: shipped
+                    to: delivered
+                cancel:
+                    from: [draft, pending, approved]
+                    to: cancelled
