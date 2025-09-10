@@ -4,6 +4,7 @@
     <script src="{{ asset('js/Task.js') }}"></script>
 {% endblock %}
 
+
 {% block title %}Hello JobTaskController!{% endblock %}
 
 {% block body %}
@@ -12,34 +13,46 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
 
-    <table style="border: 1px">
-      <tr>  <th><h5>Title</h5></th>
-        <th><h5>Description</h5></th>
-        <th><h5>Created</h5></th>
-        <th><h5>Completed</h5></th>
-        <th><h5>Done</h5></th>
-        <th><h5>Delete</h5></th
-      </tr>
-        {% for task in jobTasks %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Task List</h2>
+
+        <table class="table">
+            <thead class="table-dark">
             <tr>
-            <td>{{ task.title}}</td>
-            <td>{{ task.description}}</td>
-            <td>{{ task.createdAt|date('Y-m-d H:i:s') }}</td>
-            <td>{{ task.completed ? 'YES' : 'NO' }}</td>
-            <td style="cursor:pointer; color:blue" onclick="markJobDone({{ task.id }})"  >DONE </td>
-            <td style="cursor:pointer; color: red" onclick="deleteTask({{ task.id }})" id="{{ task.id }}">DELETE</td>
+                <th scope="col"><h5>Title</h5></th>
+                <th scope="col"><h5>Description</h5></th>
+                <th scope="col"><h5>Created</h5></th>
+                <th scope="col"><h5>Completed</h5></th>
+                <th scope="col"><h5>Done</h5></th>
+                <th scope="col"><h5>Delete</h5></th>
             </tr>
-        {% endfor %}
-    </table>
-    This friendly message is coming from:
-    <ul>
-        <li><input  title="Title" placeholder="Title" id="taskTitle" ></li>
-        <li><input type=text title="Description" placeholder="Description" id="taskDsc" ></li>
-        <li><input type=submit title="Add"  onclick="addTask()" id="TaskSubmit" ></li>
-    </ul>
-    <label id="result"></label>
-</div>
+            </thead>
+            <tbody>
+
+                {% for task in jobTasks %}
+                    <tr >
+                        <td>{{ task.title}}</td>
+                        <td>{{ task.description}}</td>
+                        <td>{{ task.createdAt|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ task.completed ? 'YES' : 'NO' }}</td>
+                        <td style="cursor:pointer; color:blue" onclick="markJobDone({{ task.id }})"  >DONE </td>
+                        <td style="cursor:pointer; color: red" onclick="deleteTask({{ task.id }})" id="{{ task.id }}">DELETE</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="example-wrapper">
+      <h3>Add New Task</h3>
+    <input  title="Title" placeholder="Title" id="taskTitle" >
+        <input type=text title="Description" placeholder="Description" id="taskDsc" >
+        <input type=submit title="Add"  onclick="addTask()" id="TaskSubmit" >
+
+
+
+    </div>
 {% endblock %}

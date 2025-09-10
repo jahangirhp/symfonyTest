@@ -14,10 +14,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class JobTaskController extends AbstractController
 {
-    #[Route('/job/task/list', name: 'app_job_task')]
+    #[Route('/job/task/list', name: 'app_job_task_list')]
     public function list( JobTaskRepository $jobTaskRepository): Response
     {
-        $jobTasks = $jobTaskRepository->findAll();return $this->render('job_task/index.html.twig', [
+             $jobTasks = $jobTaskRepository->findAll();
+             return $this->render('job_task/index.html.twig', [
             'jobTasks' => $jobTasks,
             'controller_name' => 'JobTaskController',
         ]);
@@ -33,24 +34,33 @@ final class JobTaskController extends AbstractController
                  $jobTask = new JobTask($title, $description);
                  $entityManager->persist($jobTask);
                  $entityManager->flush($jobTask);
-
+                 $this->addFlash('success', 'Task saved successfully!');
             return new JsonResponse([
                 'success' => true,
-                'message' => 'task added successfully!'
-            ], 201);
+                            ], 201);
 
         } catch (\Exception $e) {
+
+                 $this->addFlash('success', 'Failed to save task!');
             return new JsonResponse([
                 'success' => false,
-                'message' => 'Failed to add task',
                 'error'   => $e->getMessage(), // remove in prod
             ], 500);
         }
     }
 
     #[Route('/job/task/{id}', name: 'app_job_task_done',methods: ['PATCH'])]
-    public function markJobComplete(JobTask $jobTask, EntityManagerInterface  $entityManager,int $id): JsonResponse
+    public function markJobComplete(JobTask $jobTask, EntityManagerInterface  $entityManager): JsonResponse
     {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('success', 'You do not have enough permission to do that');
+            return new JsonResponse([
+                'success' => false,
+                'error'   => 'Access denied', // remove in prod
+            ], 500);
+        }
+
+        else
         try {
 
            $jobTask->setIsCompleted(true);
@@ -71,7 +81,7 @@ final class JobTaskController extends AbstractController
     }
 
     #[Route('/job/task/{id}', name: 'app_job_task_delete',methods: ['DELETE'])]
-    public function delete(JobTask $jobTask, EntityManagerInterface  $entityManager,int $id): JsonResponse
+    public function delete(JobTask $jobTask, EntityManagerInterface  $entityManager): JsonResponse
     {
         try {
             $entityManager->remove($jobTask);

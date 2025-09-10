@@ -14,7 +14,9 @@ class UserType extends AbstractType
     {
         $builder
             ->add('name')
+            ->add('roles')
             ->add('email');
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void

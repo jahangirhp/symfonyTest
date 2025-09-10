@@ -14,7 +14,6 @@ function addTask(){
         .then(response => response.json())
         .then(data => {
             callListTasks();
-            document.getElementById("result").innerText =  data["message"];
         })
         .catch(error => console.error('Error:', error));
 }
@@ -32,7 +31,6 @@ function markJobDone($taskId){
         .then(response => response.json())
         .then(data => {
             callListTasks();
-            document.getElementById("result").innerText =  data["message"];
         })
         .catch(error => console.error('Error:', error));
 }
@@ -46,7 +44,6 @@ function deleteTask($taskId){
         .then(response => response.json())
         .then(data => {
             callListTasks();
-            document.getElementById("result").innerText =  data["message"];
         })
         .catch(error => console.error('Error:', error));
 }

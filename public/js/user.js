@@ -1,41 +1,23 @@
 
-
-function addTask(){
-    // Read value from input
-    const title = document.getElementById("taskTitle").value;
-    const description = document.getElementById("taskDsc").value;
-
-    // Send to Symfony controller via fetch
-    fetch('/job/task/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title,description:description })
-    })
-        .then(response => response.json())
-        .then(data => {
-            callListTasks();
-        })
-        .catch(error => console.error('Error:', error));
-}
-function callListTasks()
+function callListUsers()
 {
-    window.location.href = "/job/task/list";
+    window.location.href = "/user/get";
 }
 
-function markJobDone($taskId){
+function makeUserAdmin($userId){
     // Read value from input
     // Send to Symfony controller via fetch
-    fetch('/job/task/'+$taskId, {
+    fetch('/user/admin/'+$userId, {
         method: 'PATCH',
             })
         .then(response => response.json())
         .then(data => {
-            callListTasks();
+            callListUsers();
         })
         .catch(error => console.error('Error:', error));
 }
 
-function deleteTask($taskId){
+function deleteUser($taskId){
     // Read value from input
     // Send to Symfony controller via fetch
     fetch('/job/task/'+$taskId, {

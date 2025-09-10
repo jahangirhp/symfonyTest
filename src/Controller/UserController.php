@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\Type\UserType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Id;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +20,7 @@ final class UserController extends AbstractController
     {
         $user = new User();
         $user->setName('John Doe');
-        $user->setEmail('john.doe@example.com');
+        $user->setEmail('john2.doe@example.com');
 
         $entityManager->persist($user);
         $entityManager->flush();
@@ -26,6 +28,22 @@ final class UserController extends AbstractController
         $res=new Response("new user is created");
 
         return $res;
+    }
+
+    #[Route('/user/admin/{id}', name: 'app_user_admin', methods: ['PATCH'])]
+    public function makeUserAdmin(User $user,EntityManagerInterface $entityManager): Response
+    {
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+
+        // Add ROLE_ADMIN
+        $user->addRole('ROLE_ADMIN');
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new Response('User is now an admin!');
     }
 
         #[Route('/user/new', name: 'user_new')]
@@ -52,29 +70,11 @@ final class UserController extends AbstractController
     public function get(EntityManagerInterface $entityManager): Response
     {
         $users = $entityManager->getRepository(User::class)->findAll();
+        return $this->render('user/index.html.twig', [
+            'users' => $users,
+            'controller_name' => 'UserController',
+        ]);
 
-        $data = [];
-        foreach ($users as $user) {
-            $data[] = [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'email' => $user->getEmail(),
-            ];
-        }
-
-        // Generate HTML table directly in the controller
-        $html = '<table border="1"><tr><th>ID</th><th>Name</th><th>Email</th></tr>';
-        foreach ($data as $user) {
-            $html .= sprintf(
-            '<tr><td>%d</td><td>%s</td><td>%s</td></tr>',
-            $user['id'],
-            htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8')
-            );
-        }
-        $html .= '</table>';
-
-        return new Response($html);
     }
 
       #[Route('/api/users/get', name: 'api_users_get')]
