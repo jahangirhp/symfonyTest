@@ -8,10 +8,19 @@
 {% block title %}Hello JobTaskController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
 
 
     <div class="container mt-5">
@@ -24,22 +33,32 @@
                 <th scope="col"><h5>Description</h5></th>
                 <th scope="col"><h5>Created</h5></th>
                 <th scope="col"><h5>Completed</h5></th>
+                <th scope="col"><h5>Admin</h5></th>
                 <th scope="col"><h5>Done</h5></th>
+                <th scope="col"><h5>Assign</h5></th>
                 <th scope="col"><h5>Delete</h5></th>
             </tr>
             </thead>
             <tbody>
 
-                {% for task in jobTasks %}
-                    <tr >
-                        <td>{{ task.title}}</td>
-                        <td>{{ task.description}}</td>
-                        <td>{{ task.createdAt|date('Y-m-d H:i:s') }}</td>
-                        <td>{{ task.completed ? 'YES' : 'NO' }}</td>
-                        <td style="cursor:pointer; color:blue" onclick="markJobDone({{ task.id }})"  >DONE </td>
-                        <td style="cursor:pointer; color: red" onclick="deleteTask({{ task.id }})" id="{{ task.id }}">DELETE</td>
-                    </tr>
-                {% endfor %}
+            {% for task in jobTasks %}
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.createdAt|date('Y-m-d H:i:s') }}</td>
+                    <td>{{ task.completed ? 'YES' : 'NO' }}</td>
+                    <td>{{ task.admin ? task.admin.name : 'N/A' }}</td>
+                    <td style="cursor:pointer; color:blue" onclick="markJobDone({{ task.id }})">DONE</td>
+                    <td style="cursor:pointer; color: blue" id="{{ task.id }}">
+                        <button onclick="getUsers({{ task.id }})" type="button" id="cart-button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#userModal">
+                            Add
+                        </button>
+                    </td>
+                    <td style="cursor:pointer; color: red" onclick="deleteTask({{ task.id }})" id="{{ task.id }}">
+                        DELETE
+                    </td>
+                </tr>
+            {% endfor %}
 
             </tbody>
         </table>
@@ -47,12 +66,25 @@
 
 
     <div class="example-wrapper">
-      <h3>Add New Task</h3>
-    <input  title="Title" placeholder="Title" id="taskTitle" >
-        <input type=text title="Description" placeholder="Description" id="taskDsc" >
-        <input type=submit title="Add"  onclick="addTask()" id="TaskSubmit" >
+        <h3>Add New Task</h3>
+        <input title="Title" placeholder="Title" id="taskTitle">
+        <input type=text title="Description" placeholder="Description" id="taskDsc">
+        <input type=submit title="Add" onclick="addTask()" id="TaskSubmit">
 
 
+        {#        Modal to show user listi #}
+        <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Allowed users</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div id="user-modal-body" class="modal-body">
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 {% endblock %}

@@ -1,60 +1,71 @@
 <?php
 
 namespace App\Controller;
-
 use App\Entity\Product;
+use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ProductController extends AbstractController
 {
-    #[Route('/product', name: 'app_product')]
-    public function index(): Response
+    #[Route('/product/admin', name: 'app_products',methods: ['POST','GET'])]
+    public function list( Request $request, EntityManagerInterface $em,
+                           ProductRepository $productRepository,FileUploader $fileUploader
+    ): Response
     {
-        return $this->render('product/index.html.twig', [
-            'controller_name' => 'ProductController',
+        $product = new Product();
+        $form = $this->createForm(ProductType::class, $product);
+        $form->handleRequest($request);
+        $imageFile = $form->get('imgUrl')->getData();
+
+        if ($imageFile) {
+            $newFilename = $fileUploader->upload($imageFile);
+            $product->setImgUrl($newFilename);
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($product);
+            $em->flush();
+            $this->addFlash('success', 'Product added with Form!');
+        }
+
+        $products = $productRepository->findAll();
+        return $this->render('product/admin/list.html.twig', [
+            'form' => $form->createView(),
+            'products' => $products,
         ]);
     }
 
-    #[Route('/product/add', name: 'app_product_add')]
-    public function createProduct(EntityManagerInterface $entityManager,productRepository $productRepository,ValidatorInterface $validator): Response
+    #[Route('/product/list', name: 'app_product_list_user',methods: ['GET'])]
+    public function list_product_user( ProductRepository $productRepository,Request $request): Response
     {
-        $product = new Product();
-        $product->setCode(12153);
-        $entityManager->persist($product);
-        $entityManager->flush();
-
-        $errors = $validator->validate($product);
-        if (count($errors) > 0) {
-            return new Response((string) $errors, 400);
-        }
-       $products= $productRepository->findAll();
-
-        $data = [];
-        foreach ($products as $prod) {
-            $data[] = [
-                'id' => $prod->getId(),
-                'code' => $prod->getcode(),
-            ];
+        $filter = $request->get('name');
+        if ($filter) {
+            $products = $productRepository->findByName($filter);
+        } else {
+            $products = $productRepository->findAll();
         }
 
-        // Generate HTML table directly in the controller
-        $html = '<table border="1"><tr><th>ID</th><th>Name</th><th>code</th></tr>';
-        foreach ($data as $prod) {
-            $html .= sprintf(
-                '<tr><td>%d</td><td>%s</td><td>%s</td></tr>',
-                $prod['id'],
-                htmlspecialchars($prod['id'], ENT_QUOTES, 'UTF-8'),
-                htmlspecialchars($prod['code'], ENT_QUOTES, 'UTF-8')
-            );
-        }
-        $html .= '</table>';
-
-        return new Response($html);
-
+        return $this->render('product/product_list.html.twig', [
+            'products' => $products,
+            'filter' => $filter,
+        ]);
     }
+    #[Route('/product/admin/{id}', name: 'app_product_delete',methods: ['POST'])]
+    public function delete(Product $product, EntityManagerInterface  $entityManager,Request $request):Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($product);
+            $entityManager->flush();
+            $this->addFlash('success', 'Product deleted successfully');
+        }
+        return $this->redirectToRoute('app_products');
+    }
+
+
 }

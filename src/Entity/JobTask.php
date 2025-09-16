@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\JobTaskRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JobTaskRepository::class)]
+#[ApiResource]
 class JobTask
 {
     public function __construct($title,$description)
@@ -32,6 +34,9 @@ class JobTask
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne]
+    private ?User $admin = null;
 
     public function getId(): ?int
     {
@@ -82,6 +87,18 @@ class JobTask
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getAdmin(): ?User
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(?User $admin): static
+    {
+        $this->admin = $admin;
 
         return $this;
     }

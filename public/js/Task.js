@@ -48,3 +48,21 @@ function deleteTask($taskId){
         .catch(error => console.error('Error:', error));
 }
 
+async function getUsers(taskId){
+        const response = await fetch('/job/task/user/modal/'+ taskId);
+        const html = await response.text();
+
+        // inject Twig-rendered HTML into modal body
+        document.getElementById('user-modal-body').innerHTML = html;
+    }
+
+
+async function addJobTaskAdmin(taskId,userId){
+    // Read value from input
+    // Send to Symfony controller via fetch
+  await  fetch('/job/task/user/add/'+taskId, {
+        method: 'PATCH',
+        body: JSON.stringify({userId: userId})
+    });
+    callListTasks();
+}

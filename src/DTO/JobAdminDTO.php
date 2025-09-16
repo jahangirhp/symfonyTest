@@ -2,18 +2,18 @@
 
 namespace App\DTO;
 
+use App\Entity\JobTask;
 use App\Entity\Product;
+use App\Entity\User;
 
 class JobAdminDTO
 {
-    public Product $product;
-    public int $subtotal;
-    public string $quantity;
-    public function __construct(Product $product, int $quantity)
+    public JobTask $jobTask;
+    public User $user;
+    public function __construct( User $user,JobTask $jobTask)
     {
-        $this->product = $product;
-        $this->quantity = $quantity;
-        $this->subtotal = $product->getPrice()*$quantity;
+        $this->user = $user;
+        $this->jobTask = $jobTask;
     }
 
 }
